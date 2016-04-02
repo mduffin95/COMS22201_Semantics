@@ -4,18 +4,18 @@
 -- Question 1: Denotational Semantics of While with read/write
 ---------------------------------------------------------------
 -- This stub file provides a set of Haskell type definitions
--- you should use to implement various functions and examples 
--- associated with the denotational semantics of While with 
+-- you should use to implement various functions and examples
+-- associated with the denotational semantics of While with
 -- read and write statements as previously used in CWK1.
--- 
--- To answer this question, upload one file "cwk2.hs" to the 
+--
+-- To answer this question, upload one file "cwk2.hs" to the
 -- "CWK2" unit component in SAFE by midnight on 01/05/2016.
 --
--- You should ensure your file loads in GHCI with no errors 
+-- You should ensure your file loads in GHCI with no errors
 -- and it does not import any modules (other than Prelude).
 --
--- Please note that you will loose marks if your submission 
--- is late, incorrectly named, generates load errors, 
+-- Please note that you will loose marks if your submission
+-- is late, incorrectly named, generates load errors,
 -- or if you modify any of the type definitions below.
 --
 -- For further information see the brief at the following URL:
@@ -24,7 +24,7 @@
 
 import Prelude hiding (Num)
 import qualified Prelude (Num)
-  
+
 type Num = Integer
 type Var = String
 type Z = Integer
@@ -36,7 +36,7 @@ type IOState = (Input,Output,State)  -- to denote the combined inputs, outputs a
 
 data Aexp = N Num | V Var | Add Aexp Aexp | Mult Aexp Aexp | Sub Aexp Aexp deriving (Show, Eq, Read)
 data Bexp = TRUE | FALSE | Eq Aexp Aexp | Le Aexp Aexp | Neg Bexp | And Bexp Bexp deriving (Show, Eq, Read)
-data Stm  = Ass Var Aexp | Skip | Comp Stm Stm | If Bexp Stm Stm | While Bexp Stm 
+data Stm  = Ass Var Aexp | Skip | Comp Stm Stm | If Bexp Stm Stm | While Bexp Stm
           | Read Var       -- for reading in the value of a variable
           | WriteA Aexp    -- for writing out the value of an arithmetic expression
           | WriteB Bexp    -- for writing out the value of a Boolean expression
@@ -60,7 +60,7 @@ fv_aexp a = rem_dup (fv_aexp_help a)
             fv_aexp_help (Sub a b) = fv_aexp_help a ++ fv_aexp_help b
 
 rem_dup :: [Var] -> [Var]
-rem_dup [] = [] 
+rem_dup [] = []
 rem_dup (x:xs)
     | x `elem` xs = rem_dup xs
     | otherwise = x:(rem_dup xs)
@@ -100,21 +100,30 @@ fix f = f (fix f)
 
 update :: State -> Z -> Var -> State
 update s i v x
-    | v == x = i
-    | otherwise = s x
+  | v == x = i
+  | otherwise = s x
 ---------------------------------------------------------------
 -- Part B))
 --
--- Write a function fv_stm with the following signature such that 
--- fv_stm p returns the set of (free) variables appearing in p:  
+-- Write a function fv_stm with the following signature such that
+-- fv_stm p returns the set of (free) variables appearing in p:
 ---------------------------------------------------------------
 
 fv_stm :: Stm -> [Var]
+fv_stm p = rem_dup (fv_stm_help p)
+  where fv_stm_help (Ass x a)       = fv_aexp a
+        fv_stm_help (Comp st1 st2)  = fv_stm_help st1 ++ fv_stm_help st2
+        fv_stm_help (If b st1 st2)  = fv_stm_help st1 ++ fv_stm_help st2
+        fv_stm_help (While b st)    = fv_stm_help st
+        fv_stm_help (Read x)        = [x]
+        fv_stm_help (WriteA a)      = fv_aexp a
+        fv_stm_help (WriteB b)      = fv_bexp b
+        fv_stm_help _               = []
 
 ---------------------------------------------------------------
 -- Part C)
 --
--- Define a constant fac representing the following program 
+-- Define a constant fac representing the following program
 -- (which you may recall from the file test7.w used in CWK1):
 {--------------------------------------------------------------
 write('Factorial calculator'); writeln;
@@ -132,11 +141,50 @@ writeln;
 ---------------------------------------------------------------}
 
 fac :: Stm
+fac = Comp
+  (WriteS "Factorial calculator")
+  (Comp
+    (WriteLn)
+    (Comp
+      (WriteS "Enter number: ")
+      (Comp
+        (Read "x")
+        (Comp
+          (WriteS "Factorial of ")
+          (Comp
+            (WriteA (V "x"))
+            (Comp
+              (WriteS " is ")
+              (Comp
+                (Ass "y" (N 1))
+                (Comp
+                  (While
+                    (Neg (Eq (V "x") (N 1)))
+                    (Comp
+                      (Ass "y" (Mult (V "y") (V "x")))
+                      (Ass "x" (Sub (V "x") (N 1)))
+                    )
+                  )
+                  (Comp
+                    (WriteA (V "y"))
+                    (Comp
+                      WriteLn
+                      WriteLn
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
 
 ---------------------------------------------------------------
 -- Part D)
 --
--- Define a constant pow representing the following program 
+-- Define a constant pow representing the following program
 -- (which you may recall from the file test7.w used in CWK1):
 {--------------------------------------------------------------
 write('Exponential calculator'); writeln;
@@ -160,27 +208,101 @@ writeln
 ---------------------------------------------------------------}
 
 pow :: Stm
-
+pow = Comp
+  (WriteS "Exponential calculator")
+  (Comp
+    (WriteLn)
+    (Comp
+      (WriteS "Enter base: ")
+      (Comp
+        (Read "base")
+        (Comp
+          (If
+            (Le (N 1) (V "base"))
+            (Comp
+              (WriteS "Enter exponent: ")
+              (Comp
+                (Read "exponent")
+                (Comp
+                  (Ass "num" (N 1))
+                  (Comp
+                    (Ass "count" (V "exponent"))
+                    (Comp
+                      (While
+                        (Le (N 1) (V "count"))
+                        (Comp
+                          (Ass "num" (Mult (V "num") (V "base")))
+                          (Ass "count" (Sub (V "count") (N 1)))
+                        )
+                      )
+                      (Comp
+                        (WriteA (V "base"))
+                        (Comp
+                          (WriteS " raised to the power of ")
+                          (Comp
+                            (WriteA (V "exponent"))
+                            (Comp
+                              (WriteS " is ")
+                              (Comp
+                                (WriteA (V "num"))
+                                (Skip)
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+            (Comp
+              (WriteS "Invalid base ")
+              (WriteA (V "base"))
+            )
+          )
+          (WriteLn)
+        )
+      )
+    )
+  )
 ---------------------------------------------------------------
 -- Part E)
 --
--- Write a function s_ds with the following signature such that 
--- s_ds p (i,o,s) returns the result of semantically evaluating 
+-- Write a function s_ds with the following signature such that
+-- s_ds p (i,o,s) returns the result of semantically evaluating
 -- program p in state s with input list i and output list o.
 ---------------------------------------------------------------
+b_val_ios :: Bexp -> IOState -> T
+b_val_ios b (i,o,s) = b_val b s
 
 s_ds :: Stm -> IOState -> IOState
+s_ds (Ass x a) (i, o, s)        = (i, o, update s (a_val a s) x)
+s_ds Skip ios                   = ios
+s_ds (Comp st1 st2) ios         = (s_ds st2 . s_ds st1) ios
+s_ds (If b st1 st2) ios         = cond (b_val_ios b, s_ds st1, s_ds st2) ios
+s_ds (While b st) ios           = fix ff ios
+  where   ff g = cond (b_val_ios b, g . s_ds st, id)
+s_ds (Read x) (i:is, o, s)      = (is, o ++ ["<" ++ show i ++ ">"], update s i x)
+s_ds (WriteA a) (i, o, s)       = (i, o ++ [show (a_val a s)], s)
+s_ds (WriteB b) (i, o, s)       = (i, o ++ [show (b_val b s)], s)
+s_ds (WriteS str) (i, o, s)     = (i, o ++ [str], s)
+s_ds WriteLn (i, o, s)          = (i, o ++ ["\n"], s)
 
 ---------------------------------------------------------------
 -- Part F)
 --
--- Write a function eval with the following signature such that 
--- eval p (i,o,s) computes the result of semantically evaluating 
--- program p in state s with input list i and output list o; and 
--- then returns the final input list and output list together 
--- with a list of the variables appearing in the program and 
+-- Write a function eval with the following signature such that
+-- eval p (i,o,s) computes the result of semantically evaluating
+-- program p in state s with input list i and output list o; and
+-- then returns the final input list and output list together
+-- with a list of the variables appearing in the program and
 -- their respective values in the final state.
 ---------------------------------------------------------------
 
 eval :: Stm -> IOState -> (Input, Output, [Var], [Num])
-
+eval p ios =
+  let vars      = fv_stm p
+      (i, o, s) = s_ds p ios
+  in (i, o, vars, map s vars)
+  -- where eval_help (i, o, s) = (i, o, fv_stm p, map s )
