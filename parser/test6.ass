@@ -1,0 +1,122 @@
+XOR R0,R0,R0
+JMP n0
+n0:
+WRS 0
+JMP n2
+n1:
+WRS 5
+n2:
+JMP n4
+n3:
+WRS 0
+JMP n5
+n4:
+WRS 5
+n5:
+JMP n7
+n6:
+WRS 0
+JMP n8
+n7:
+WRS 5
+n8:
+JMP n9
+n9:
+WRS 0
+JMP n11
+n10:
+WRS 5
+n11:
+JMP n14
+n14:
+JMP n12
+n12:
+WRS 0
+JMP n15
+n13:
+WRS 5
+n15:
+JMP n18
+n18:
+JMP n17
+n16:
+WRS 0
+JMP n19
+n17:
+WRS 5
+n19:
+JMP n21
+n22:
+JMP n20
+n20:
+WRS 0
+JMP n23
+n21:
+WRS 5
+n23:
+JMP n25
+n26:
+JMP n25
+n24:
+WRS 0
+JMP n27
+n25:
+WRS 5
+n27:
+JMP n28
+n28:
+WRS 0
+JMP n30
+n29:
+WRS 5
+n30:
+JMP n33
+n33:
+JMP n32
+n31:
+WRS 0
+JMP n34
+n32:
+WRS 5
+n34:
+JMP n36
+n37:
+JMP n35
+n35:
+WRS 0
+JMP n38
+n36:
+WRS 5
+n38:
+JMP n41
+n41:
+JMP n40
+n39:
+WRS 0
+JMP n42
+n40:
+WRS 5
+n42:
+JMP n44
+n45:
+JMP n46
+n46:
+JMP n43
+n43:
+WRS 0
+JMP n47
+n44:
+WRS 5
+n47:
+HALT
+DATA 116 ; t 
+DATA 114 ; r 
+DATA 117 ; u 
+DATA 101 ; e 
+DATA 0 ;  
+DATA 102 ; f 
+DATA 97 ; a 
+DATA 108 ; l 
+DATA 115 ; s 
+DATA 101 ; e 
+DATA 0 ;  
