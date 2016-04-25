@@ -68,45 +68,55 @@ writeln;
  -- with respect to suitable pre- and post-conditions:
  ------------------------------------------------------------}
 
-{ IN=[b,e] }
+{ IN=[b,e] & 1<=b & 1<=e }
 write('Exponential calculator'); writeln;
 
 write('Enter base: ');
-{ IN=append(b,[e]) }
-{ head(IN)=b & tail(IN)=[e] }
+{ IN=append(b,[e]) & 1<=b & 1<=e }
+{ head(IN)=b & tail(IN)=[e] & 1<=b & 1<=e }
 read(base);
-{ base=b & IN = [e] }
-
+{ base=b & IN=[e] & 1<=b & 1<=e }
+{ 1<=base & IN=[e] & base=b & 1<=e}
 if 1 <= base then (
-  { base=b & 1<=base & IN=[e] }
-  { 1<=b & IN=[e] }
+  { 1<=base & IN=[e] & base=b & 1<=e }
   write('Enter exponent: ');
-
-  { head(IN)=e }
+  { IN=append(e,[]) & base=b & 1<=e }
+  { head(IN)=e & tail(IN)=[] & base=b & 1<=e }
   read(exponent);
-  { exponent=e }
+  { exponent=e & IN=[] & base=b & 1<=e }
+  { 1<=exponent & base=b & exponent=e }
 
   num := 1;
-  { exponent=e & num=1 }
+  { 1<=exponent & exponent=e & base=b & num=1 }
   count := exponent;
-  { exponent=e & count=e & num=1 }
-  {base^exponent=num*base^count}
+  { 1<=exponent & exponent=e & base=b & num=1 & count=exponent}
+  { 1<=exponent & exponent=e & base=b & num=1 & count=e}
+  { base^exponent=num*base^count & 0<=count }
   while 1 <= count do (
-
+    { base^exponent=num*base^count & 1<=count & 0<=count }
+    { base^exponent=(num*base)*base^(count-1) & 1<=count & 0<=count}
     num := num * base;
-
+    { base^exponent=num*base^(count-1) & 1<=count & 0<=count }
+    { base^exponent=num*base^(count-1) & 0<=(count-1) }
     count := count - 1
-
+    { base^exponent=num*base^count & 0<=count }
   );
-
+  { base^exponent=num*base^count & 0<=count & count<1 }
+  { base^exponent=num*base^count & count=0 }
+  { base^exponent=num & count=0 }
   write(base); write(' raised to the power of '); write(exponent); write(' is ');
 
   write(num)
 
 ) else (
-
-  write('Invalid base '); write(base)
-
+  { base=b^e & base<1 } //This is false
+  write('Invalid base ');
+  { append(OUT,[b^e])=append(_,[b^e])}
+  write(base)
+  { OUT=append(_,[b^e]) }
 );
-
+{ OUT=append(_,[b^e]) }
+{ append(OUT,['\n'])=append(_,[b^e,'\n']) }
 writeln
+{ OUT=append(_,[b^e,'\n']) }
+{ OUT=append(_,[b^e,_])}
