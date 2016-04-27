@@ -90,7 +90,7 @@ if 1 <= base then (
   { 1<=exponent & exponent=e & base=b & num=1 }
   count := exponent;
   { 1<=exponent & exponent=e & base=b & num=1 & count=exponent}
-  { 1<=exponent & exponent=e & base=b & num=1 & count=e}
+  { base^exponent=num*base^count & 1<=count } //Maybe replace base^exponent with b^e
   { base^exponent=num*base^count & 0<=count }
   while 1 <= count do (
     { base^exponent=num*base^count & 1<=count & 0<=count }
@@ -101,13 +101,13 @@ if 1 <= base then (
     count := count - 1
     { base^exponent=num*base^count & 0<=count }
   );
-  { base^exponent=num*base^count & 0<=count & count<1 }
+  { base^exponent=num*base^count & 0<=count & ¬(1<=count) }
   { base^exponent=num*base^count & count=0 }
   { base^exponent=num & count=0 }
   write(base); write(' raised to the power of '); write(exponent); write(' is ');
-
+  { append(OUT,[b^e])=append(_,[b^e])}
   write(num)
-
+  { OUT=append(_,[b^e]) }
 ) else (
   { base=b^e & base<1 } //This is false
   write('Invalid base ');

@@ -1,0 +1,4 @@
+*.ass
+*.class
+/parser/Lex.java
+/parser/Syn.java
