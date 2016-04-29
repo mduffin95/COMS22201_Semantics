@@ -36,25 +36,43 @@ read(x);
 write('Factorial of '); write(x); write(' is ');
 y := 1;
 {y=1 & x=n}
-{ n!=yx! }
+{ x>0 -> n!=yx! }
 while !(x=1) do (
-  { n!=yx! & !(x=1) }
-  { n!=(y*x)(x-1)! & !(x=1) }
+  { x>0 -> n!=yx! & !(x=1) }
+  {
+    1. x>0 -> n!=yx! given
+    2. (x-1)>0 assumed
+    3. x>1 from 2 by addding 1 to both sides
+    4. 1>0 by basic arithmetic
+    5. x>0 by 3 and 4
+    6. n!=yx! from 5 and 1 by -> elimination
+    7. x!=x*(x-1)! by definition of ! using 5
+    8. n!=y*x*(x-1)! sub 7 in 6
+  }
+  { (x-1)>0 -> n!=(y*x)(x-1)! & !(x=1) }
   y := y * x;
-  { n!=y(x-1)! & !(x=1) }
+  { (x-1)>0 -> n!=y(x-1)! & !(x=1) }
   x := x - 1
-  { n!=yx! }
+  { x>0 -> n!=yx! }
 );
+{ x>0 -> n!=yx! & x=1 }
+{
+  1. x>0 -> n!=yx! given
+  2. x=1 given
+  3. 1>0 by basic arithmetic
+  4. x>0 by 2 and 3
+  5. n!=yx! from 4 and 1 by -> elimination
+}
 { n!=yx! & x=1 }
 { y=n! }
 { append(OUT,[y])=append(OUT,[n!]) }
-{ append(OUT,[y]) = append(_,[n!]) }
+{ append(OUT,[y])=append(_,[n!]) }
 write(y);
 { OUT=append(_,[n!]) }
-{ append(OUT,['\n']) = append(_,[n!,'\n']) }
+{ append(OUT,['\n'])=append(_,[n!,'\n']) }
 writeln;
 { OUT=append(_,[n!,'\n']) }
-{ append(OUT,['\n']) = append(_,[n!,'\n','\n']) }
+{ append(OUT,['\n'])=append(_,[n!,'\n','\n']) }
 writeln;
 { OUT=append(_,[n!,'\n','\n'])}
 { OUT=append(_,[n!,_,_]) }
@@ -76,7 +94,7 @@ write('Enter base: ');
 { head(IN)=b & tail(IN)=[e] & 1<=b & 1<=e }
 read(base);
 { base=b & IN=[e] & 1<=b & 1<=e }
-{ 1<=base & IN=[e] & base=b & 1<=e}
+{ 1<=base & IN=[e] }
 if 1 <= base then (
   { 1<=base & IN=[e] & base=b & 1<=e }
   write('Enter exponent: ');
@@ -104,13 +122,23 @@ if 1 <= base then (
   { base^exponent=num*base^count & 0<=count & ¬(1<=count) }
   { base^exponent=num*base^count & count=0 }
   { base^exponent=num & count=0 }
-  write(base); write(' raised to the power of '); write(exponent); write(' is ');
-  { append(OUT,[b^e])=append(_,[b^e])}
+  { num=b^e }
+  write(base);
+  { num=b^e }
+  write(' raised to the power of ');
+  { num=b^e }
+  write(exponent);
+  { num=b^e }
+  write(' is ');
+  { num=b^e }
+  { append(OUT,[num])=append(_,[b^e]) }
   write(num)
   { OUT=append(_,[b^e]) }
 ) else (
-  { base=b^e & base<1 } //This is false
+  { 1<=base & ¬(1<=base) }
+  { false }
   write('Invalid base ');
+  { false }
   { append(OUT,[b^e])=append(_,[b^e])}
   write(base)
   { OUT=append(_,[b^e]) }
@@ -119,4 +147,4 @@ if 1 <= base then (
 { append(OUT,['\n'])=append(_,[b^e,'\n']) }
 writeln
 { OUT=append(_,[b^e,'\n']) }
-{ OUT=append(_,[b^e,_])}
+{ OUT=append(_,[b^e,_]) }
